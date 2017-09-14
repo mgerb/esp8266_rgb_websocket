@@ -5,44 +5,56 @@
 #include "Storage.h"
 #include "MyWifi.h"
 
-char path[] = "/ws/channel/1";
-char host[] = "192.168.1.4";
+char host[50];
+char path[50] = "/ws/channel/";
+int port;
 
-#define REDPIN 13
-#define GREENPIN 12
-#define BLUEPIN 14
+#define REDPIN 13 // pin 7
+#define GREENPIN 12 // pin 6
+#define BLUEPIN 14 // pin 5
 
 WebSocketClient webSocketClient;
 WiFiClient client;
 
-void connectToWebServer() {
-  while (!client.connect(host, 5000)) {
-    delay(5000);
-    Serial.println("Attempting to reconnect...");
+void getDetailsFromStorage() {
+
+  StaticJsonBuffer<512> jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(Storage::getAll());
+  
+  if (
+    !root.success() ||
+    (!root.containsKey("host") ||
+    !root.containsKey("deviceId") ||
+    !root.containsKey("port"))
+  ) {
+    Serial.println("Bad json or unknown keys.");
+    MyWifi::startAccessPoint();
+    return;
   }
+
+  const char* newDeviceId = root["deviceId"];
+  const char* newHost = root["host"];
+  int newPort = root["port"];
+
+  strcat(path, newDeviceId);
+  memcpy(host, newHost, strlen(newHost));
+  port = newPort;
 }
 
-void handshakeToWebServer() {
-  // Handshake with the server
+// connect to web server
+void connectToWebServer() {
+  client.connect(host, port);
+}
+
+// Handshake with the web server
+void handshakeWebServer() {
   webSocketClient.path = path;
   webSocketClient.host = host;
-
-  while (!webSocketClient.handshake(client)) {
-    Serial.println("Handshake failed.");
-
-    // try to reconnect if disconnect
-    if (!client.connected()) {
-      connectToWebServer();
-    }
-
-    delay(5000);
-  }
-
-  Serial.println("Handshake successful");
+  webSocketClient.handshake(client);
+  Serial.println("Handshake successful.");
 }
 
 void setup() {
-
   pinMode(REDPIN, OUTPUT);
   pinMode(GREENPIN, OUTPUT);
   pinMode(BLUEPIN, OUTPUT);
@@ -50,21 +62,31 @@ void setup() {
   Serial.begin(115200);
   delay(10);
 
-  MyWifi::establishConnection();
-
-  delay(1000);
-  
-  connectToWebServer();
-  handshakeToWebServer();
-
+  MyWifi::connect();
+  getDetailsFromStorage();
 }
 
-// TODO: wifi reconnect
 void loop() {
-  String data;
 
-  if (client.connected()) {
-    
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Wifi connection lost. Attempting to reconnect.");
+    MyWifi::connect();
+  }
+  
+  else if (!client.connected()) {
+    Serial.println("Attempting to reconnect to server.");
+    // attempt to connect
+    connectToWebServer();
+
+    // handshake if connection is valid
+    if (client.connected()) {
+      handshakeWebServer();
+    }
+  }
+  
+  else {
+
+    String data;
     webSocketClient.getData(data);
 
     if (data.length() > 0) {
@@ -73,23 +95,14 @@ void loop() {
       JsonObject& root = jsonBuffer.parseObject(data);
       
       if (!root.success()) {
-        Serial.println("parseObject() failed");
+        Serial.println("Object parse failed.");
       } else {
         //reset pins
         analogWrite(REDPIN, root["red"]);
-        analogWrite(BLUEPIN, root["green"]);
-        analogWrite(GREENPIN, root["blue"]);
+        analogWrite(BLUEPIN, root["blue"]);
+        analogWrite(GREENPIN, root["green"]);
       }
-      
     }
-    
-  } else {
-    Serial.println("Client disconnected.");
+  }  
 
-    // reconnect and handshake
-    connectToWebServer();
-    handshakeToWebServer();
-    delay(1000);
-  }
-  
 }

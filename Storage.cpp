@@ -1,5 +1,6 @@
 #include "Storage.h"
 #include <EEPROM.h>
+#include <Arduino.h>
 
 Storage::Storage() {}
 
@@ -12,19 +13,19 @@ void Storage::clear() {
   EEPROM.end();
 }
 
-void Storage::writeInfo(char input[]) {
+void Storage::storeAll(String input) {
 
   clear();
   EEPROM.begin(512);
 
-  for (int i = 0; i < strlen(input); i++) {
+  for (int i = 0; i < input.length(); i++) {
     EEPROM.write(i, input[i]);
   }
 
   EEPROM.end();
 }
 
-char* Storage::getInfo() {
+String Storage::getAll() {
 
   EEPROM.begin(512);
   char info[512];
@@ -36,6 +37,5 @@ char* Storage::getInfo() {
 
   EEPROM.end();
 
-  return info;
+  return String(info);
 }
-
