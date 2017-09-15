@@ -5,12 +5,13 @@
   "scripts": {
     "build": "webpack -p --progress --colors",
     "c9": "webpack-dev-server --host 0.0.0.0 --port 8080 --inline --hot --history-api-fallback",
-    "dev": "webpack-dev-server --inline --hot --history-api-fallback",
+    "dev": "webpack-dev-server --host 0.0.0.0 --inline --hot --history-api-fallback",
     "watch": "webpack --watch"
   },
   "author": "Mitchell Gerber",
   "license": "MIT",
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
@@ -30,6 +31,8 @@
     "webpack-dev-server": "^2.8.2"
   },
   "dependencies": {
+    "axios": "^0.16.2",
+    "normalize.css": "^7.0.0",
     "preact": "^8.2.5",
     "preact-compat": "^3.17.0"
   }

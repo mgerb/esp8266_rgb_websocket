@@ -1,1 +1,13 @@
-@import "../assets/normalize.css";
+@import "~normalize.css/normalize.css";
+
+$dark-blue: #1d2938;
+$blue: #258de5;
+$blue--lighter: saturate(lighten($blue, 10%), 100%);
+$green: #39ce83;
+$light-blue: #e9eef2;
+$red: #e95779;
+$white: #fff;
+
+html {
+  font-family: sans-serif;
+}

@@ -34,6 +34,11 @@ void handleNotFound() {
     File file = SPIFFS.open(uri, "r");
     server.streamFile(file, getContentType(uri));
     file.close();
+  } else {
+    // serve index.html if not exists
+    File file = SPIFFS.open("/index.html", "r");
+    server.streamFile(file, "text/html");
+    file.close();
   }
 
   server.send(404, "text/html", "File not found.");

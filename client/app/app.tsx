@@ -1,16 +1,8 @@
-import { Component, h, render } from 'preact';
+import { h, render } from 'preact';
+import { Dashboard } from './components/dashboard.component';
 import './scss/index.scss';
-
-class Dashboard extends Component<any, any> {
-
-  public render() {
-    return (
-      <div>test</div>
-    );
-  }
-}
 
 render(
   <Dashboard />,
-  document.querySelector('#app') as Element,
+  document.querySelector('#app'),
 );

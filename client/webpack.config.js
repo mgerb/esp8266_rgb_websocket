@@ -23,10 +23,10 @@ module.exports = {
             loaders: ['babel-loader', 'ts-loader']
         },{
             test: /\.scss$/,
-            loader: 'css-loader!postcss-loader!sass-loader'
+            loaders: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
         }, {
             test: /\.css$/,
-            loader: 'css-loader'
+            loaders: ['style-loader', 'css-loader']
         }, {
             test: /\.svg$/,
             loader: 'url-loader?limit=65000&mimetype=image/svg+xml&name=static/[name].[hash].[ext]'
