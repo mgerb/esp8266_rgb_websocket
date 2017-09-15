@@ -2,11 +2,42 @@
 #include <ArduinoJson.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
+#include <FS.h>
 
 #include "MyWifi.h"
 #include "Storage.h"
 
 ESP8266WebServer server(80);
+
+String getContentType(String filename){
+  if(server.hasArg("download")) return "application/octet-stream";
+  else if(filename.endsWith(".htm")) return "text/html";
+  else if(filename.endsWith(".html")) return "text/html";
+  else if(filename.endsWith(".css")) return "text/css";
+  else if(filename.endsWith(".js")) return "application/javascript";
+  else if(filename.endsWith(".png")) return "image/png";
+  else if(filename.endsWith(".gif")) return "image/gif";
+  else if(filename.endsWith(".jpg")) return "image/jpeg";
+  else if(filename.endsWith(".ico")) return "image/x-icon";
+  else if(filename.endsWith(".xml")) return "text/xml";
+  else if(filename.endsWith(".pdf")) return "application/x-pdf";
+  else if(filename.endsWith(".zip")) return "application/x-zip";
+  else if(filename.endsWith(".gz")) return "application/x-gzip";
+  return "text/plain";
+}
+
+// serve files on not found
+void handleNotFound() {
+  String uri = server.uri();
+
+  if (SPIFFS.exists(uri)) {
+    File file = SPIFFS.open(uri, "r");
+    server.streamFile(file, getContentType(uri));
+    file.close();
+  }
+
+  server.send(404, "text/html", "File not found.");
+}
 
 void handleSubmit() {
   StaticJsonBuffer<512> buffer;
@@ -29,9 +60,9 @@ void handleSubmit() {
   ESP.restart();
 }
 
-MyWifi::MyWifi() {}
-
 void MyWifi::startAccessPoint() {
+
+  SPIFFS.begin();
 
   Serial.println("Starting access point.");
 
@@ -41,6 +72,7 @@ void MyWifi::startAccessPoint() {
 
   // register route handlers
   server.on("/submit", handleSubmit);
+  server.onNotFound(handleNotFound);
 
   server.begin();
 
