@@ -1,7 +1,8 @@
 build-client:
-	cd ./client && yarn install && yarn run build
+	cd ./esp8266/client && yarn install && yarn run build
 
 copy-files:
-	cp -r ./client/dist ./esp8266/data
+	mkdir -p ./esp8266/data
+	cp -r ./esp8266/client/dist/* ./esp8266/data
 
 all: build-client copy-files
