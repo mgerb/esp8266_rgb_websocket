@@ -1,0 +1,45 @@
+.range {
+  -webkit-appearance: none; 
+  width: 300px;
+  height: 10px; 
+  margin: 20px 0 20px 10px;
+  background: lighten($dark-blue, 10%);
+  background-size: 100%;
+  background-position: center; 
+  background-repeat: no-repeat; 
+  border-radius: 5px;
+  outline: none; 
+  zoom: 130%; 
+}
+
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none; 
+  width: 20px; 
+  height: 20px; 
+  position: relative; 
+  z-index: 3; 
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.range::-webkit-slider-thumb:after {
+  content: " "; 
+  width: 200px;
+  height: 10px; 
+  position: absolute; 
+  z-index: 1; 
+  right: 20px; 
+  top: 5px; 
+}
+
+.red::-webkit-slider-thumb {
+  background: $red;
+}
+
+.green::-webkit-slider-thumb {
+  background: $green;
+}
+
+.blue::-webkit-slider-thumb {
+  background: $blue;
+}

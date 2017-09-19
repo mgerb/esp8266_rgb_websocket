@@ -1,9 +1,25 @@
 @import '../scss/index.scss';
 
 .container {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  color: $blue--lighter;
+}
+
+.slider__container {
+  box-sizing: border-box;
+  padding: 20px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
   height: 100%;
-  color: $light-blue;
+}
+
+.rgb-text-input {
+  width: 50px;
+  border: none;
+  background: none;
+  color: $blue--lighter;
+  border-radius: 5px;
 }

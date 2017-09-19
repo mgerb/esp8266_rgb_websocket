@@ -1,0 +1,82 @@
+@import '../scss/index.scss';
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 250px;
+  transition: left 0.2s ease-in-out;
+  background: lighten($dark-blue, 5%);
+  z-index: 500;
+
+  .toggler {
+    position: absolute;
+    top: 5px;
+    right: -50px;
+    color: lighten($dark-blue, 15%);
+    cursor: pointer;
+    transition: color .5s;
+
+    &:hover {
+      color: $blue;
+    }
+  }
+
+  &.closed {
+    left: -250px;
+  }
+
+  ::placeholder {
+    color: lighten($dark-blue, 30%);
+  }
+}
+
+.sidebar__input {
+  border-radius: 3px;
+  border: 1px solid lighten($dark-blue, 10%);
+  background: $dark-blue;
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  color: $blue--lighter;
+}
+
+.sidebar__device-list {
+  overflow-y: auto;
+
+  .sidebar__device {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px;
+    padding-left: 10px;
+    height: 50px;
+    cursor: pointer;
+    background: lighten($dark-blue, 2%);
+
+    &:hover {
+      background: lighten($dark-blue, 3%);
+    }
+
+    &+.sidebar__device {
+      border-top: 1px solid $dark-blue;
+    }
+
+    .fa-check {
+      color: $green;
+      padding-right: 5px;
+    }
+  }
+
+  .sidebar__trash {
+    color: $red;
+    cursor: pointer;
+
+    &:hover {
+      color: lighten($red, 5%);
+    }
+  }
+}

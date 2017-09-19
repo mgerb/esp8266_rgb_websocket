@@ -1,20 +1,24 @@
 import { Component, h } from 'preact';
+import * as _ from 'lodash';
+import { Sidebar } from './sidebar.component';
 import './dashboard.component.scss';
-
-interface Props {}
+import { Device } from './sidebar.component';
 
 interface State {
   red: number;
   green: number;
   blue: number;
+  selectedDevice?: Device;
 }
 
-export class Dashboard extends Component<Props, State> {
+export const SELECTED_DEVICE_KEY = 'selectedDevice';
 
-  private url: string = `ws://localhost:5000/ws/channel/1`;
+export class Dashboard extends Component<any, State> {
+
+  private url: string = `ws://192.168.1.4:5000/ws/channel/`;
   private ws: WebSocket;
 
-  constructor(props: Props) {
+  constructor(props: any) {
     super(props);
     this.state = {
       red: 0,
@@ -24,28 +28,54 @@ export class Dashboard extends Component<Props, State> {
   }
 
   public componentDidMount() {
-    this.ws = new WebSocket(this.url);
-
+    const selectedDevice: Device = JSON.parse(localStorage.getItem(SELECTED_DEVICE_KEY));
+    this.setState({selectedDevice});
+    if (_.get(this.state, 'selectedDevice.id')) {
+      this.startWebSocket(this.state.selectedDevice.id);
+    }
   }
 
   private onColorInput(color: string, value: string) {
     const newState = {};
     newState[color] = parseInt(value, 10);
-
     this.setState(newState);
-
     this.ws.send(JSON.stringify(this.state));
+  }
+
+  private onSelectedDevice(selectedDevice: Device): void {
+    localStorage.setItem(SELECTED_DEVICE_KEY, JSON.stringify(selectedDevice));
+    this.setState({selectedDevice});
+    this.startWebSocket(this.state.selectedDevice.id);
+  }
+
+  private startWebSocket(id: string): void {
+    if (this.ws) {
+      this.ws.close();
+    }
+    this.ws = new WebSocket(this.url + id);
   }
 
   public render() {
 
-    const {red, green, blue} = this.state;
+    const { red, green, blue } = this.state;
 
     return (
-      <div className="container" style={{background: `rgb(${red},${green},${blue}`}}>
-        <div>
-          <div>
+      <div className="container">
+
+        <Sidebar onSelect={this.onSelectedDevice.bind(this)}/>
+
+        <div  className="slider__container">
+          <h3 style={{textAlign: 'center'}}>{_.get(this.state, 'selectedDevice.name')}</h3>
+
+          <div className="flex--center">
             <input
+              className="rgb-text-input"
+              type="number"
+              value={red.toString()}
+              onInput={(e: any) => this.onColorInput('red', e.target.value)}
+            />
+            <input
+              className="range red"
               type="range"
               min="0"
               max="255"
@@ -53,17 +83,31 @@ export class Dashboard extends Component<Props, State> {
               onInput={(e: any) => this.onColorInput('red', e.target.value)}
             />
           </div>
-          <div>
+          <div className="flex--center">
             <input
+              className="rgb-text-input"
+              type="number"
+              value={green.toString()}
+              onInput={(e: any) => this.onColorInput('green', e.target.value)}
+            />
+            <input
+              className="range green"
               type="range"
               min="0"
               max="255"
-              value={this.state.green.toString()}
+              value={green.toString()}
               onInput={(e: any) => this.onColorInput('green', e.target.value)}
             />
           </div>
-          <div>
+          <div className="flex--center">
             <input
+              className="rgb-text-input"
+              type="number"
+              value={blue.toString()}
+              onInput={(e: any) => this.onColorInput('blue', e.target.value)}
+            />
+            <input
+              className="range blue"
               type="range"
               min="0"
               max="255"
