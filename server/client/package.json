@@ -5,8 +5,8 @@
   "scripts": {
     "build": "webpack -p --progress --colors",
     "c9": "webpack-dev-server --host 0.0.0.0 --port 8080 --inline --hot --history-api-fallback",
-    "dev": "webpack-dev-server --host 0.0.0.0 --inline --hot --history-api-fallback",
-    "watch": "webpack --watch"
+    "dev-server": "webpack-dev-server --host 0.0.0.0 --inline --hot --history-api-fallback",
+    "dev": "webpack --watch"
   },
   "author": "Mitchell Gerber",
   "license": "MIT",

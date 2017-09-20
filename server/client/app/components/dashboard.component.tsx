@@ -15,7 +15,7 @@ export const SELECTED_DEVICE_KEY = 'selectedDevice';
 
 export class Dashboard extends Component<any, State> {
 
-  private url: string = `ws://192.168.1.4:5000/ws/channel/`;
+  private url: string = `ws://${window.location.host}/ws/channel/`;
   private ws: WebSocket;
 
   constructor(props: any) {
@@ -53,6 +53,11 @@ export class Dashboard extends Component<any, State> {
       this.ws.close();
     }
     this.ws = new WebSocket(this.url + id);
+    this.ws.onmessage = this.onMessage;
+  }
+
+  private onMessage(event: any) {
+    console.log(event);
   }
 
   public render() {

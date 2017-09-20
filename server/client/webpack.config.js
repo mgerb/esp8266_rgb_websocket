@@ -9,7 +9,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].[hash].js'
+        filename: 'static/[name].[hash].js'
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
