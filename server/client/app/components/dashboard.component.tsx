@@ -39,7 +39,10 @@ export class Dashboard extends Component<any, State> {
     const newState = {};
     newState[color] = parseInt(value, 10);
     this.setState(newState);
-    this.ws.send(JSON.stringify(this.state));
+
+    const data = _.cloneDeep(this.state);
+    delete data.selectedDevice;
+    this.ws.send(JSON.stringify(data));
   }
 
   private onSelectedDevice(selectedDevice: Device): void {
@@ -53,11 +56,26 @@ export class Dashboard extends Component<any, State> {
       this.ws.close();
     }
     this.ws = new WebSocket(this.url + id);
-    this.ws.onmessage = this.onMessage;
+
+    // get initial RGB values on open websocket
+    this.ws.onopen = () => {
+      this.ws.send(JSON.stringify({type: 'init'}));
+    };
+
+    this.ws.onmessage = this.onMessage.bind(this);
   }
 
   private onMessage(event: any) {
-    console.log(event);
+
+    const { type, red, green, blue} = JSON.parse(event.data);
+
+    if (type === 'init') {
+      this.setState({
+        red,
+        green,
+        blue,
+      });
+    }
   }
 
   public render() {
