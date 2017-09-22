@@ -12,6 +12,7 @@ int port;
 #define REDPIN 13 // pin 7
 #define GREENPIN 12 // pin 6
 #define BLUEPIN 14 // pin 5
+#define BUTTONPIN 5 // pin 20
 
 WebSocketClient webSocketClient;
 WiFiClient client;
@@ -58,9 +59,15 @@ void setup() {
   pinMode(REDPIN, OUTPUT);
   pinMode(GREENPIN, OUTPUT);
   pinMode(BLUEPIN, OUTPUT);
+  pinMode(BUTTONPIN, INPUT);
 
   Serial.begin(115200);
   delay(10);
+
+  // if reset button is pressed erase local storage
+  if (digitalRead(BUTTONPIN) == 1) {
+    Storage::clear();
+  }
 
   MyWifi::connect();
   getDetailsFromStorage();
