@@ -15,7 +15,8 @@ module.exports = {
         extensions: ['.ts', '.tsx', '.js'],
         alias: {
             "react": "preact-compat",
-            "react-dom": "preact-compat"
+            "react-dom": "preact-compat",
+            "create-react-class": "preact-compat/lib/create-react-class"
         }
     },
     module: {
@@ -56,6 +57,6 @@ module.exports = {
             filename: 'index.html',
             template: './index.html'
         }),
-        new webpack.HotModuleReplacementPlugin(),
+        new webpack.HotModuleReplacementPlugin()
     ]
 };

@@ -1,7 +1,10 @@
 import { Component, h } from 'preact';
 import * as _ from 'lodash';
+
+import { Device } from '../model';
+import { Storage } from '../storage';
+
 import './sidebar.component.scss';
-import { SELECTED_DEVICE_KEY } from './dashboard.component';
 
 interface Props {
   onSelect: (device) => void;
@@ -14,13 +17,6 @@ interface State {
   selectedDevice?: Device;
   devices?: Device[];
 }
-
-export interface Device {
-  id?: string;
-  name?: string;
-}
-
-const STORAGE_KEY = 'devices';
 
 export class Sidebar extends Component<Props, State> {
 
@@ -35,37 +31,37 @@ export class Sidebar extends Component<Props, State> {
   }
 
   public componentDidMount() {
-    const devices = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    const selectedDevice = JSON.parse(localStorage.getItem(SELECTED_DEVICE_KEY));
+    const devices: Device[] = Storage.getAllDevices();
+    const selectedDevice: Device = Storage.getSelectedDevice();
     this.setState({devices, selectedDevice});
   }
 
   private addDevice(): void {
-    const currentStore = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    const newStore = currentStore || [];
-
     const { newDeviceId, newDeviceName } = this.state;
-    newStore.push({ id: newDeviceId, name: newDeviceName});
+    Storage.addDevice({id: newDeviceId, name: newDeviceName});
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newStore));
+    const devices = Storage.getAllDevices();
+
+    // set selected device to the newly added device
+    const selectedDevice = _.find(devices, (d: Device) => d.id === newDeviceId);
+    this.selectDevice(selectedDevice);
 
     this.setState({
       newDeviceId: '',
       newDeviceName: '',
-      devices: newStore,
+      devices,
     });
   }
 
   private removeDevice(id: string): void {
-    const store = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    const newStore = _.reject(store, (s) => s.id === id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newStore));
+    Storage.removeDevice(id);
     this.setState({
-      devices: newStore,
+      devices: Storage.getAllDevices(),
     });
   }
 
   private selectDevice(selectedDevice: Device): void {
+    Storage.setSelectedDevice(selectedDevice);
     this.props.onSelect(selectedDevice);
     this.setState({selectedDevice});
   }

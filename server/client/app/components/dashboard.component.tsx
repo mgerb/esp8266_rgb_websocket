@@ -2,7 +2,8 @@ import { Component, h } from 'preact';
 import * as _ from 'lodash';
 import { Sidebar } from './sidebar.component';
 import './dashboard.component.scss';
-import { Device } from './sidebar.component';
+import { Device } from '../model';
+import { Storage } from '../storage';
 
 interface State {
   red: number;
@@ -10,8 +11,6 @@ interface State {
   blue: number;
   selectedDevice?: Device;
 }
-
-export const SELECTED_DEVICE_KEY = 'selectedDevice';
 
 export class Dashboard extends Component<any, State> {
 
@@ -28,7 +27,7 @@ export class Dashboard extends Component<any, State> {
   }
 
   public componentDidMount() {
-    const selectedDevice: Device = JSON.parse(localStorage.getItem(SELECTED_DEVICE_KEY));
+    const selectedDevice: Device = Storage.getSelectedDevice();
     this.setState({selectedDevice});
     if (_.get(this.state, 'selectedDevice.id')) {
       this.startWebSocket(this.state.selectedDevice.id);
@@ -46,7 +45,6 @@ export class Dashboard extends Component<any, State> {
   }
 
   private onSelectedDevice(selectedDevice: Device): void {
-    localStorage.setItem(SELECTED_DEVICE_KEY, JSON.stringify(selectedDevice));
     this.setState({selectedDevice});
     this.startWebSocket(this.state.selectedDevice.id);
   }
