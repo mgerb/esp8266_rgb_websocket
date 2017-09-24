@@ -77,7 +77,7 @@ func main() {
 	})
 
 	// start web server
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":5000", r)
 }
 
 func fileServer(r chi.Router, path string, root http.FileSystem) {
